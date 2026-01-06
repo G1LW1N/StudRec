@@ -53,9 +53,9 @@
             <h2 class="fw-bold mb-4">Dashboard Overview</h2>
 
         <!-- Dashboard Cards -->
-        <div class="row g-4">
+        <div class="row g-4 mb-4">
 
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="stat-card shadow-sm">
                     <div class="icon-wrapper bg-primary">
                         <i class="bi bi-people-fill"></i>
@@ -67,7 +67,7 @@
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="stat-card shadow-sm">
                     <div class="icon-wrapper bg-success">
                         <i class="bi bi-journal-bookmark-fill"></i>
@@ -79,6 +79,130 @@
                 </div>
             </div>
 
+            <div class="col-md-3">
+                <div class="stat-card shadow-sm">
+                    <div class="icon-wrapper bg-info">
+                        <i class="bi bi-gender-male"></i>
+                    </div>
+                    <div>
+                        <h3><%= maleCount %></h3>
+                        <p>Male Students</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="stat-card shadow-sm">
+                    <div class="icon-wrapper bg-warning">
+                        <i class="bi bi-gender-female"></i>
+                    </div>
+                    <div>
+                        <h3><%= femaleCount %></h3>
+                        <p>Female Students</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Charts and Tables Row -->
+        <div class="row g-4">
+            <!-- Students per Course -->
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-bar-chart-fill"></i> Students per Course</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Course</th>
+                                        <th class="text-end">Students</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% studentsPerCourse.forEach(course => { %>
+                                        <tr>
+                                            <td><%= course.course_name.trim() %></td>
+                                            <td class="text-end">
+                                                <span class="badge bg-primary"><%= course.student_count %></span>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students per Academic Year -->
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-calendar3"></i> Students per Academic Year</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Academic Year</th>
+                                        <th class="text-end">Students</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% studentsPerYear.forEach(year => { %>
+                                        <tr>
+                                            <td><%= year.academicyear %></td>
+                                            <td class="text-end">
+                                                <span class="badge bg-success"><%= year.count %></span>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Students -->
+        <div class="row g-4 mt-3">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recently Added Students</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Name</th>
+                                        <th>Course</th>
+                                        <th>Date of Birth</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% recentStudents.forEach(student => { %>
+                                        <tr>
+                                            <td><%= student.student_id %></td>
+                                            <td><%= student.firstname %> <%= student.lastname %></td>
+                                            <td><%= student.course_name.trim() %></td>
+                                            <td><%= new Date(student.dateofbirth).toLocaleDateString() %></td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         </div>

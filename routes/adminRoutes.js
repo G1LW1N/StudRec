@@ -50,27 +50,51 @@ router.post("/login", async (req, res) => {
 // Admin Dashboard
 router.get("/dashboard", requireAdminAuth, async (req, res) => {
     try {
+        // Total counts
         const studentCountResult = await db.query("SELECT COUNT(*) FROM student_info");
         const courseCountResult = await db.query("SELECT COUNT(*) FROM courses");
+        const maleCountResult = await db.query("SELECT COUNT(*) FROM student_info WHERE gender = 'Male'");
+        const femaleCountResult = await db.query("SELECT COUNT(*) FROM student_info WHERE gender = 'Female'");
+
+        // Students per course
+        const studentsPerCourse = await db.query(`
+            SELECT c.course_name, COUNT(si.student_id) as student_count
+            FROM courses c
+            LEFT JOIN student_info si ON c.course_id = si.course_id
+            GROUP BY c.course_id, c.course_name
+            ORDER BY student_count DESC
+        `);
+
+        // Students per academic year
+        const studentsPerYear = await db.query(`
+            SELECT academicyear, COUNT(*) as count
+            FROM student_info
+            GROUP BY academicyear
+            ORDER BY academicyear DESC
+        `);
+
+        // Recent students (last 5)
+        const recentStudents = await db.query(`
+            SELECT si.student_id, si.firstname, si.lastname, si.dateofbirth, c.course_name
+            FROM student_info si
+            JOIN courses c ON si.course_id = c.course_id
+            ORDER BY si.student_id DESC
+            LIMIT 5
+        `);
 
         const totalStudents = studentCountResult.rows[0].count;
         const totalCourses = courseCountResult.rows[0].count;
-
-        const students = await db.query(`
-            SELECT student_id, firstname, lastname, gender, course_id 
-            FROM student_info
-        `);
-
-        const courses = await db.query(`
-            SELECT course_id, TRIM(course_name) AS course_name 
-            FROM courses
-        `);
+        const maleCount = maleCountResult.rows[0].count;
+        const femaleCount = femaleCountResult.rows[0].count;
 
         res.render("admin-dashboard", {
             studentCount: totalStudents,
             courseCount: totalCourses,
-            students: students.rows,
-            courses: courses.rows
+            maleCount: maleCount,
+            femaleCount: femaleCount,
+            studentsPerCourse: studentsPerCourse.rows,
+            studentsPerYear: studentsPerYear.rows,
+            recentStudents: recentStudents.rows
         });
 
     } catch (error) {
