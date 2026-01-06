@@ -15,7 +15,7 @@
 			</div>
 		</div>
 		<div class="topbar-actions">
-			<a class="btn btn-outline-light btn-sm" href="/student/logout">
+			<a class="btn btn-outline-light btn-sm" href="/student/logout" onclick="handleLogout(event, '/student/logout')">
 				<i class="bi bi-box-arrow-right"></i> Logout
 			</a>
 		</div>
@@ -153,3 +153,42 @@
 	</div>
 </div>
 
+<script>
+// Check session validity on page load
+(function() {
+    fetch('/student/check-session', {
+        method: 'GET',
+        credentials: 'same-origin',
+        cache: 'no-store'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.valid) {
+            window.location.replace('/student/login');
+        }
+    })
+    .catch(() => {
+        window.location.replace('/student/login');
+    });
+})();
+
+// Check on visibility change (when returning to tab)
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        fetch('/student/check-session', {
+            method: 'GET',
+            credentials: 'same-origin',
+            cache: 'no-store'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.valid) {
+                window.location.replace('/student/login');
+            }
+        });
+    }
+});
+</script>
+
+</body>
+</html>

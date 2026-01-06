@@ -3,6 +3,10 @@ export const requireStudentAuth = (req, res, next) => {
     if (!req.session || !req.session.studentId) {
         return res.redirect("/student/login");
     }
+    // Prevent browser from caching protected pages
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
     next();
 };
 
@@ -11,6 +15,10 @@ export const requireAdminAuth = (req, res, next) => {
     if (!req.session || !req.session.adminId) {
         return res.redirect("/admin/login");
     }
+    // Prevent browser from caching protected pages
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
     next();
 };
 

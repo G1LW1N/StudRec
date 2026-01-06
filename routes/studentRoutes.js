@@ -6,6 +6,15 @@ import { requireStudentAuth, redirectIfStudentAuth } from "../middleware/auth.js
 
 const router = express.Router();
 
+// Session check endpoint
+router.get("/check-session", (req, res) => {
+    if (req.session && req.session.studentId) {
+        res.json({ valid: true });
+    } else {
+        res.json({ valid: false });
+    }
+});
+
 router.get("/sections/:courseID", async (req, res) => {
     const courseID = req.params.courseID;
 
@@ -42,7 +51,7 @@ router.get("/register", redirectIfStudentAuth, async (req, res) => {
     }
 });
 
-router.post("/register", uploadCOR.single("corfile"), async (req, res) => {
+router.post("/register", redirectIfStudentAuth, uploadCOR.single("corfile"), async (req, res) => {
     try {
         const {
             email, password, firstname, middlename, lastname, dateofbirth, gender,
@@ -85,7 +94,7 @@ router.post("/register", uploadCOR.single("corfile"), async (req, res) => {
     }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", redirectIfStudentAuth, async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -102,7 +111,15 @@ router.post("/login", async (req, res) => {
         if (!match) return res.send("Invalid email or password.");
 
         req.session.studentId = student.student_id;
-        res.redirect("/student/dashboard");
+        
+        // Save session before redirect
+        req.session.save((err) => {
+            if (err) {
+                console.error("Session save error:", err);
+                return res.send("Login failed. Please try again.");
+            }
+            res.redirect("/student/dashboard");
+        });
 
     } catch (err) {
         console.error(err);
@@ -112,6 +129,11 @@ router.post("/login", async (req, res) => {
 
 router.get("/dashboard", requireStudentAuth, async (req, res) => {
     try {
+        // Double-check session exists
+        if (!req.session || !req.session.studentId) {
+            return res.redirect("/student/login");
+        }
+        
         const studentId = req.session.studentId;
 
         const result = await db.query(
@@ -166,9 +188,32 @@ router.get("/dashboard", requireStudentAuth, async (req, res) => {
 });
 
 router.get("/logout", (req, res) => {
-    req.session.destroy(() => {
-        res.redirect("/student/login");
+    // Prevent caching of logout page
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private, max-age=0");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "-1");
+    
+    // Clear the session cookie first
+    res.clearCookie("connect.sid", {
+        path: "/",
+        httpOnly: true,
+        sameSite: "lax"
     });
+    
+    // Destroy session
+    if (req.session) {
+        req.session.destroy((err) => {
+            if (err) {
+                console.error("Logout error:", err);
+            }
+            // Don't use cache for redirect
+            res.setHeader("Location", "/student/login");
+            res.status(302).end();
+        });
+    } else {
+        res.setHeader("Location", "/student/login");
+        res.status(302).end();
+    }
 });
 
 export default router;

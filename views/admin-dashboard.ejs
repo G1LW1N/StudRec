@@ -43,7 +43,7 @@
                         <i class="bi bi-person-circle"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                        <li><a class="dropdown-item" href="/admin/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                        <li><a class="dropdown-item" href="/admin/logout" onclick="handleLogout(event, '/admin/logout')"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
                     </ul>
                 </div>
             </div>
@@ -209,5 +209,42 @@
     </main>
 
 </div>
+
+<script>
+// Check admin session validity on page load
+(function() {
+    fetch('/admin/check-session', {
+        method: 'GET',
+        credentials: 'same-origin',
+        cache: 'no-store'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.valid) {
+            window.location.replace('/admin/login');
+        }
+    })
+    .catch(() => {
+        window.location.replace('/admin/login');
+    });
+})();
+
+// Check on visibility change
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        fetch('/admin/check-session', {
+            method: 'GET',
+            credentials: 'same-origin',
+            cache: 'no-store'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.valid) {
+                window.location.replace('/admin/login');
+            }
+        });
+    }
+});
+</script>
 
 <%- include("partials/footer") %>

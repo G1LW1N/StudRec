@@ -17,7 +17,14 @@ app.use(
     session({
         secret: process.env.SESSION_SECRET,
         resave: false,
-        saveUninitialized: false
+        saveUninitialized: false,
+        name: "connect.sid",
+        cookie: {
+            httpOnly: true,
+            secure: false, // Set to true if using HTTPS
+            maxAge: 1000 * 60 * 60 * 24, // 24 hours
+            sameSite: "lax"
+        }
     })
 );
 

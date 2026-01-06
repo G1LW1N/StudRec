@@ -6,13 +6,22 @@ import { requireAdminAuth, redirectIfAdminAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 
+// Session check endpoint
+router.get("/check-session", (req, res) => {
+    if (req.session && req.session.adminId) {
+        res.json({ valid: true });
+    } else {
+        res.json({ valid: false });
+    }
+});
+
 // Admin login page
 router.get("/login", redirectIfAdminAuth, (req, res) => {
     res.render("admin-login");
 });
 
 // Admin login POST
-router.post("/login", async (req, res) => {
+router.post("/login", redirectIfAdminAuth, async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -39,7 +48,14 @@ router.post("/login", async (req, res) => {
         req.session.adminId = admin.admin_id;
         req.session.adminEmail = admin.email;
 
-        res.redirect("/admin/dashboard");
+        // Save session before redirect
+        req.session.save((err) => {
+            if (err) {
+                console.error("Session save error:", err);
+                return res.send("Login failed. Please try again.");
+            }
+            res.redirect("/admin/dashboard");
+        });
 
     } catch (err) {
         console.error(err);
@@ -402,17 +418,32 @@ router.post("/add-student", requireAdminAuth, async (req, res) => {
 
 // Admin Logout
 router.get("/logout", (req, res) => {
-    // Clear session if you're using sessions
-    if (req.session) {
+    // Prevent caching of logout page
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    
+    // Save the session object before destroying
+    const sessionID = req.session;
+    
+    // Clear the session cookie first
+    res.clearCookie("connect.sid", {
+        path: "/",
+        httpOnly: true,
+        sameSite: "lax"
+    });
+    
+    // Destroy session
+    if (sessionID) {
         req.session.destroy((err) => {
             if (err) {
                 console.error("Logout error:", err);
             }
-            res.redirect("/admin/login");
+            // Force redirect after session is destroyed
+            return res.redirect("/admin/login");
         });
     } else {
-        // If no session, just redirect
-        res.redirect("/admin/login");
+        return res.redirect("/admin/login");
     }
 });
 
