@@ -1,0 +1,32 @@
+<%- include("partials/header", { title: "Home" }) %>
+
+<div class="index-container">
+    <div class="landing-row row g-0 w-100">
+
+        <div class="col-md-8 d-none d-md-block landing-image">
+            <img src="/images/school.jpg" class="img-fluid h-100 w-100 object-fit-cover">
+        </div>
+
+        <div class="col-12 col-md-4 d-flex flex-column justify-content-center align-items-center landing-content p-5">
+
+            <div class="logo-container">
+                <img src="/images/studford-logo.png" alt="Studford Logo" class="landing-logo mb-3">
+            </div>
+
+            <h1 class="display-4 fw-bold mb-3 text-center">Stud<span style="color: #0A9C8C;">Rec</span></h1>
+            <p class="lead mb-4 text-center text-muted">Studford University Student Information System</p>
+
+            <div class="d-flex flex-column flex-sm-row gap-3 mt-3">
+                <a href="/student/login" class="btn btn-teal btn-lg landing-btn">
+                    <i class="bi bi-mortarboard-fill"></i> Student
+                </a>
+
+                <a href="/admin/login" class="btn btn-dark btn-lg landing-btn">
+                    <i class="bi bi-person-fill-lock"></i> Admin
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include("partials/footer") %>

@@ -1,0 +1,155 @@
+<%- include('partials/header', { title: 'Student Dashboard' }) %>
+
+<div class="student-dashboard">
+	<header class="student-topbar">
+		<div class="topbar-left">
+			<div class="brand-mark">
+				<img src="/images/studford-logo.png" alt="StudRec" class="brand-logo">
+				<div class="brand-text">
+					<span class="brand-title">StudRec</span>
+					<span class="brand-sub">Student Portal</span>
+				</div>
+			</div>
+			<div class="topbar-welcome">
+				Welcome back, <strong><%= student.firstname %></strong>
+			</div>
+		</div>
+		<div class="topbar-actions">
+			<a class="btn btn-outline-light btn-sm" href="/student/logout">
+				<i class="bi bi-box-arrow-right"></i> Logout
+			</a>
+		</div>
+	</header>
+
+	<main class="student-main container py-4">
+		<div class="row g-4">
+			<div class="col-lg-8">
+				<section class="card student-hero shadow-sm">
+					<div class="hero-left">
+						<div class="avatar-circle">
+							<span><%= student.firstname?.charAt(0) %><%= student.lastname?.charAt(0) %></span>
+						</div>
+						<div>
+							<p class="eyebrow">Student ID: <%= student.id %></p>
+							<h2 class="hero-name"><%= student.fullName %></h2>
+							<p class="hero-course"><%= student.courseName %> • <%= student.academicYear %> • Section <%= student.section %></p>
+							<p class="hero-email"><i class="bi bi-envelope"></i> <%= student.email %></p>
+						</div>
+					</div>
+					<div class="hero-right">
+						<div class="badge-pill"><i class="bi bi-bookmark-check"></i> Enrolled</div>
+						<% if (student.corUrl) { %>
+							<button class="btn btn-teal btn-sm" data-bs-toggle="modal" data-bs-target="#corModal">View COR</button>
+						<% } else { %>
+							<span class="text-muted small">No COR uploaded</span>
+						<% } %>
+					</div>
+				</section>
+
+				<section class="card info-card shadow-sm">
+					<div class="card-header d-flex justify-content-between align-items-center">
+						<h5 class="mb-0">Academic Snapshot</h5>
+						<span class="pill light"><i class="bi bi-calendar-week"></i> Current</span>
+					</div>
+					<div class="row g-3 card-body">
+						<div class="col-md-4">
+							<div class="info-block">
+								<p class="label">Course</p>
+								<p class="value"><%= student.courseName %></p>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="info-block">
+								<p class="label">Academic Year</p>
+								<p class="value"><%= student.academicYear %></p>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="info-block">
+								<p class="label">Section</p>
+								<p class="value">Section <%= student.section %></p>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<section class="card info-card shadow-sm">
+					<div class="card-header d-flex justify-content-between align-items-center">
+						<h5 class="mb-0">Personal Details</h5>
+						<span class="pill">Up to date</span>
+					</div>
+					<div class="row g-3 card-body">
+						<div class="col-md-6">
+							<div class="info-block">
+								<p class="label">Gender</p>
+								<p class="value"><%= student.gender %></p>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="info-block">
+								<p class="label">Date of Birth</p>
+								<p class="value"><%= student.dob || '—' %></p>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="info-block">
+								<p class="label">Phone</p>
+								<p class="value"><%= student.phone %></p>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="info-block">
+								<p class="label">Address</p>
+								<p class="value"><%= student.address %></p>
+							</div>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<div class="col-lg-4">
+				<div class="card mini-card shadow-sm">
+					<p class="label">Status</p>
+					<h4 class="value text-success mb-0"><i class="bi bi-check-circle-fill"></i> Active</h4>
+					<small class="text-muted">You are currently enrolled.</small>
+				</div>
+
+				<div class="card mini-card shadow-sm">
+					<p class="label">Contact Email</p>
+					<h4 class="value"><%= student.email %></h4>
+					<small class="text-muted">Use this for official updates.</small>
+				</div>
+
+				<div class="card mini-card shadow-sm">
+					<p class="label">Need help?</p>
+					<h4 class="value">support@studrec.edu</h4>
+					<small class="text-muted">Reach out for account or academic concerns.</small>
+				</div>
+			</div>
+		</div>
+	</main>
+</div>
+
+<!-- COR Modal -->
+<div class="modal fade" id="corModal" tabindex="-1" aria-labelledby="corModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-xl modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="corModalLabel">Certificate of Registration</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body p-0 text-center" style="max-height: 80vh; overflow-y: auto;">
+				<% if (student.corUrl) { %>
+					<img src="<%= student.corUrl %>" alt="Certificate of Registration" class="img-fluid" style="max-width: 100%; height: auto;">
+				<% } %>
+			</div>
+			<div class="modal-footer">
+				<a href="<%= student.corUrl %>" class="btn btn-teal btn-sm" download>
+					<i class="bi bi-download"></i> Download COR
+				</a>
+				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+

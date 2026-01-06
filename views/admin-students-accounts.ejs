@@ -1,0 +1,211 @@
+<%- include("partials/header", { title: "Admin Dashboard" }) %>
+
+    <div class="admin-layout">
+
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <h3 class="sidebar-title">
+                <img src="/images/studford-logo.png" alt="Studford Logo" class="logo-img">
+                <div class="title-text">StudRec Admin</div>
+            </h3>
+
+            <ul class="sidebar-menu">
+                <li><a href="/admin/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+
+                <li class="has-submenu">
+                    <a href="/admin/students-personal"><i class="bi bi-people"></i> Manage Students <i class="bi bi-chevron-down"></i></a>
+
+                    <ul class="submenu">
+                        <li><a href="/admin/students-personal">Personal Information</a></li>
+                        <li><a href="/admin/students-academic">Academic Information</a></li>
+                        <li><a href="/admin/students-accounts" class="active">Accounts</a></li>
+                        <li><a href="/admin/add-student">Add New Student</a></li>
+                    </ul>
+                </li>
+
+                <li><a href="/admin/courses"><i class="bi bi-journal-bookmark"></i> Manage Courses</a></li>
+            </ul>
+
+        </aside>
+
+        <main class="admin-content">
+            <!-- Top Navigation Header -->
+            <header class="admin-header">
+                <div class="header-middle">
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Search students...">
+                        <i class="bi bi-search search-icon"></i>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <div class="dropdown">
+                        <button class="btn-profile-dropdown" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="/admin/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="admin-main-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-bold m-0">Student Accounts</h3>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-primary me-2" id="editBtn" disabled>
+                            <i class="bi bi-pencil"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger" id="deleteBtn" disabled>
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive shadow-sm table-scroll">
+                <table class="table table-hover align-middle" id="studentTable">
+                    <thead class="table-primary">
+                        <tr>
+                            <th style="width: 50px;"><input type="checkbox" id="selectAll"></th>
+                            <th class="col-id">ID</th>
+                            <th class="col-small">First Name</th>
+                            <th class="col-small">Last Name</th>
+                            <th class="col-flex">Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% students.forEach(student=> { %>
+                            <tr>
+                                <td><input type="checkbox" class="row-checkbox" data-id="<%= student.student_id %>" data-firstname="<%= student.firstname %>" data-lastname="<%= student.lastname %>" data-email="<%= student.email %>"></td>
+                                <td class="col-id">
+                                    <%= student.student_id %>
+                                </td>
+                                <td class="col-small">
+                                    <%= student.firstname %>
+                                </td>
+                                <td class="col-small">
+                                    <%= student.lastname %>
+                                </td>
+                                <td class="col-flex">
+                                    <%= student.email %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.row-checkbox');
+        const editBtn = document.getElementById('editBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach(cb => cb.checked = this.checked);
+            updateButtons();
+        });
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', updateButtons);
+        });
+
+        function updateButtons() {
+            const checked = document.querySelectorAll('.row-checkbox:checked');
+            editBtn.disabled = checked.length !== 1;
+            deleteBtn.disabled = checked.length === 0;
+        }
+
+        editBtn.addEventListener('click', function() {
+            const checked = document.querySelector('.row-checkbox:checked');
+            if (checked) {
+                populateEditModal(
+                    checked.dataset.id,
+                    checked.dataset.firstname,
+                    checked.dataset.lastname,
+                    checked.dataset.email
+                );
+                new bootstrap.Modal(document.getElementById('editModal')).show();
+            }
+        });
+
+        deleteBtn.addEventListener('click', function() {
+            const checked = document.querySelectorAll('.row-checkbox:checked');
+            if (checked.length > 0 && confirm(`Are you sure you want to delete ${checked.length} student(s)?`)) {
+                checked.forEach(cb => {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/admin/students/${cb.dataset.id}/delete`;
+                    document.body.appendChild(form);
+                    form.submit();
+                });
+            }
+        });
+    </script>
+
+    <!-- Edit Student Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary text-white border-0">
+                    <h5 class="modal-title fw-bold" id="editModalLabel">
+                        <i class="bi bi-pencil-square"></i> Edit Account Information
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editForm" method="POST">
+                    <div class="modal-body p-4">
+                        <input type="hidden" id="studentId" name="student_id">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="firstname" class="form-label fw-semibold text-secondary">First Name</label>
+                                    <input type="text" class="form-control form-control-sm" id="firstname" name="firstname" required readonly style="background-color: #f8f9fa;">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="lastname" class="form-label fw-semibold text-secondary">Last Name</label>
+                                    <input type="text" class="form-control form-control-sm" id="lastname" name="lastname" required readonly style="background-color: #f8f9fa;">
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-4">
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-semibold text-secondary">Email Address</label>
+                            <input type="email" class="form-control form-control-sm" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light border-top">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-check-circle"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function populateEditModal(studentId, firstname, lastname, email) {
+            document.getElementById('studentId').value = studentId;
+            document.getElementById('firstname').value = firstname;
+            document.getElementById('lastname').value = lastname;
+            document.getElementById('email').value = email;
+            
+            // Set form action
+            document.getElementById('editForm').action = `/admin/students/${studentId}/edit-account`;
+        }
+    </script>
+            </main>
+        </main>
+
+    </div>
+
+    <%- include("partials/footer") %>

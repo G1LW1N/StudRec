@@ -1,0 +1,89 @@
+<%- include("partials/header", { title: "Admin Dashboard" }) %>
+
+<div class="admin-layout">
+
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <h3 class="sidebar-title">
+                <img src="/images/studford-logo.png" alt="Studford Logo" class="logo-img">
+                <div class="title-text">StudRec Admin</div>
+            </h3>        <ul class="sidebar-menu">
+            <li><a href="/admin/dashboard" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+
+            <li class="has-submenu">
+                <a href="/admin/students-personal"><i class="bi bi-people"></i> Manage Students <i class="bi bi-chevron-down"></i></a>
+
+                <ul class="submenu">
+                    <li><a href="/admin/students-personal">Personal Information</a></li>
+                    <li><a href="/admin/students-academic">Academic Information</a></li>
+                    <li><a href="/admin/students-accounts">Accounts</a></li>
+                    <li><a href="/admin/add-student">Add New Student</a></li>
+                </ul>
+            </li>
+
+            <li><a href="/admin/courses"><i class="bi bi-journal-bookmark"></i> Manage Courses</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-content">
+        <!-- Top Navigation Header -->
+        <header class="admin-header">
+            <div class="header-middle">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search...">
+                    <i class="bi bi-search search-icon"></i>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <div class="dropdown">
+                    <button class="btn-profile-dropdown" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li><a class="dropdown-item" href="/admin/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <div class="admin-main-content">
+            <h2 class="fw-bold mb-4">Dashboard Overview</h2>
+
+        <!-- Dashboard Cards -->
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="stat-card shadow-sm">
+                    <div class="icon-wrapper bg-primary">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div>
+                        <h3><%= studentCount %></h3>
+                        <p>Total Students</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card shadow-sm">
+                    <div class="icon-wrapper bg-success">
+                        <i class="bi bi-journal-bookmark-fill"></i>
+                    </div>
+                    <div>
+                        <h3><%= courseCount %></h3>
+                        <p>Total Courses</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        </div>
+    </main>
+
+</div>
+
+<%- include("partials/footer") %>

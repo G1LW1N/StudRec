@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# Operating System
+.DS_Store
+Thumbs.db
+
+# Uploaded files (optional - remove if you want to include them)
+uploads/cor/*
+!uploads/cor/.gitkeep
+
+# IDE
+.vscode/
+.idea/

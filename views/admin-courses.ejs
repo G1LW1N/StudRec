@@ -1,0 +1,207 @@
+<%- include("partials/header", { title: "Admin Dashboard" }) %>
+
+    <div class="admin-layout">
+
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <h3 class="sidebar-title">
+                <img src="/images/studford-logo.png" alt="Studford Logo" class="logo-img">
+                <div class="title-text">StudRec Admin</div>
+            </h3>
+            <ul class="sidebar-menu">
+                <li><a href="/admin/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+
+                <li class="has-submenu">
+                    <a href="/admin/students-personal"><i class="bi bi-people"></i> Manage Students <i
+                            class="bi bi-chevron-down"></i></a>
+
+                    <ul class="submenu">
+                        <li><a href="/admin/students-personal">Personal Information</a></li>
+                        <li><a href="/admin/students-academic">Academic Information</a></li>
+                        <li><a href="/admin/students-accounts">Accounts</a></li>
+                        <li><a href="/admin/add-student">Add New Student</a></li>
+                    </ul>
+                </li>
+
+                <li><a href="/admin/courses" class="active"><i class="bi bi-journal-bookmark"></i> Manage Courses</a>
+                </li>
+            </ul>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-content">
+            <!-- Top Navigation Header -->
+            <header class="admin-header">
+                <div class="header-middle">
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Search courses...">
+                        <i class="bi bi-search search-icon"></i>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <div class="dropdown">
+                        <button class="btn-profile-dropdown" type="button" id="profileDropdown"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="/admin/logout"><i class="bi bi-box-arrow-right"></i>
+                                    Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-main-content">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h3 class="fw-bold m-0">Courses</h3>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#addCourseModal">+ Add Course</button>
+                </div>
+
+                <div class="table-responsive shadow-sm table-scroll">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th class="col-id">ID</th>
+                                <th class="col-flex">Course Name</th>
+                                <th class="col-small">Number of Sections</th>
+                                <th class="col-actions"></th>
+                                <th class="col-actions"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% courses.forEach(course=> { %>
+                                <tr>
+                                    <td class="col-id">
+                                        <%= course.course_id %>
+                                    </td>
+                                    <td class="col-flex">
+                                        <%= course.course_name %>
+                                    </td>
+                                    <td class="col-small">
+                                        <%= course.total_sections %>
+                                    </td>
+                                    <td class="col-actions">
+                                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#editCourseModal" data-id="<%= course.course_id %>"
+                                            data-name="<%= course.course_name %>"
+                                            data-sections="<%= course.total_sections %>">
+
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </button>
+                                    </td>
+                                    <td class="col-actions">
+                                        <form action="/admin/courses/<%= course.course_id %>/delete" method="POST"
+                                            style="display:inline;"
+                                            onsubmit="return confirm('Are you sure you want to delete this course?');">
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Add Course Modal -->
+                <div class="modal fade" id="addCourseModal" tabindex="-1" aria-labelledby="addCourseModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow-lg">
+                            <div class="modal-header bg-primary text-white border-0">
+                                <h5 class="modal-title fw-bold" id="addCourseModalLabel">
+                                    <i class="bi bi-plus-square"></i> Add Course
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <form action="/admin/courses/add" method="POST">
+                                <div class="modal-body p-4">
+                                    <div class="mb-3">
+                                        <label for="addCourseName" class="form-label fw-semibold text-secondary">Course
+                                            Name</label>
+                                        <input type="text" class="form-control form-control-sm" id="addCourseName"
+                                            name="course_name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="addTotalSections"
+                                            class="form-label fw-semibold text-secondary">Total Sections</label>
+                                        <input type="number" min="1" class="form-control form-control-sm"
+                                            id="addTotalSections" name="total_sections" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer bg-light border-top">
+                                    <button type="button" class="btn btn-outline-secondary"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        <i class="bi bi-check-circle"></i> Add Course
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Course Modal -->
+                <div class="modal fade" id="editCourseModal" tabindex="-1" aria-labelledby="editCourseModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow-lg">
+                            <div class="modal-header bg-primary text-white border-0">
+                                <h5 class="modal-title fw-bold" id="editCourseModalLabel">
+                                    <i class="bi bi-pencil-square"></i> Edit Course
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <form id="editCourseForm" method="POST">
+                                <div class="modal-body p-4">
+                                    <input type="hidden" id="editCourseId" name="course_id">
+                                    <div class="mb-3">
+                                        <label for="editCourseName" class="form-label fw-semibold text-secondary">Course
+                                            Name</label>
+                                        <input type="text" class="form-control form-control-sm" id="editCourseName"
+                                            name="course_name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editTotalSections"
+                                            class="form-label fw-semibold text-secondary">Total Sections</label>
+                                        <input type="number" min="1" class="form-control form-control-sm"
+                                            id="editTotalSections" name="total_sections" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer bg-light border-top">
+                                    <button type="button" class="btn btn-outline-secondary"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        <i class="bi bi-check-circle"></i> Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    document.getElementById('editCourseModal').addEventListener('show.bs.modal', function (event) {
+                        const button = event.relatedTarget;
+
+                        document.getElementById('editCourseId').value = button.dataset.id;
+                        document.getElementById('editCourseName').value = button.dataset.name;
+                        document.getElementById('editTotalSections').value = button.dataset.sections;
+                        document.getElementById('editCourseForm').action =
+                            `/admin/courses/${button.dataset.id}/edit`;
+                    });
+                </script>
+
+            </div>
+        </main>
+
+    </div>
+
+    <%- include("partials/footer") %>

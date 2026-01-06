@@ -1,0 +1,46 @@
+<%- include('partials/header', { title: "Admin Login" }) %>
+
+<div class="admin-login-container">
+    <div class="landing-row row g-0 w-100">
+
+        <div class="col-md-8 d-none d-md-block landing-image">
+            <img src="/images/school.jpg" class="img-fluid h-100 w-100 object-fit-cover">
+        </div>
+
+        <div class="col-12 col-md-4 d-flex flex-column justify-content-center align-items-center landing-content p-5 position-relative">
+
+            <div class="position-absolute top-0 start-0 m-3">
+                <a href="/" class="btn btn-light btn-sm rounded-circle shadow-sm"
+                   style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-arrow-left fs-5"></i>
+                </a>
+            </div>
+
+            <div class="w-100" style="max-width: 400px;">
+                <h1 class="display-5 fw-bold mb-2 text-center">Admin Login</h1>
+                <p class="text-center text-muted mb-4">Access Admin Panel</p>
+
+                <form action="/admin/login" method="POST" class="mt-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Email</label>
+                        <input type="email" name="email" class="form-control form-control-lg" placeholder="juandelacruz@example.com" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Password</label>
+                        <input type="password" name="password" class="form-control form-control-lg" placeholder="Password" required>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button class="btn btn-teal btn-sm py-3 shadow-sm rounded-pill">
+                            <i class="bi bi-box-arrow-in-right"></i> Login
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

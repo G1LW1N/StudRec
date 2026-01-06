@@ -1,0 +1,155 @@
+<%- include('partials/header', { title: "Student Registration" }) %>
+
+<div class="student-register-container py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <div class="card shadow-lg border-0 form-card">
+                    <div class="card-header text-white text-center py-3 rounded-top" style="background-color: #0A9C8C;">
+                        <h4 class="fw-bold mb-0">Student Registration</h4>
+                    </div>
+
+                    <div class="card-body p-4">
+
+                        <!-- RETURN LINK -->
+                        <div class="return-link">
+                            <a href="/student/login">← Return to Login</a>
+                        </div>
+
+                        <form method="POST" action="/student/register" enctype="multipart/form-data">
+
+                            <!-- SECTION 1: LOGIN CREDENTIALS -->
+                            <div class="section-box">
+                                <h5 class="fw-bold mb-3">Login Credentials</h5>
+
+                                <div class="mb-3">
+                                    <label>Email</label>
+                                    <input name="email" type="email" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label>Password</label>
+                                    <input name="password" type="password" required>
+                                </div>
+                            </div>
+
+                            <!-- SECTION 2: PERSONAL INFO -->
+                            <div class="section-box">
+                                <h5 class="fw-bold mb-3">Personal Information</h5>
+
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label>First Name</label>
+                                        <input name="firstname" type="text" required>
+                                    </div>
+
+                                    <div class="col-md-4 mb-3">
+                                        <label>Middle Name</label>
+                                        <input name="middlename" type="text">
+                                    </div>
+
+                                    <div class="col-md-4 mb-3">
+                                        <label>Last Name</label>
+                                        <input name="lastname" type="text" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label>Birthday</label>
+                                        <input name="dateofbirth" type="date" required>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label>Gender</label>
+                                        <select name="gender" required>
+                                            <option value="" disabled selected>Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Prefer not to say">Prefer not to say</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label>Phone Number</label>
+                                    <input name="phonenumber" type="tel" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label>Address</label>
+                                    <input name="address" type="text" required>
+                                </div>
+                            </div>
+
+                            <!-- SECTION 3: ACADEMIC INFO -->
+                            <div class="section-box">
+                                <h5 class="fw-bold mb-3">Academic Information</h5>
+
+                                <div class="mb-3">
+                                    <label>Course</label>
+                                    <select name="course" id="courseSelect" required>
+                                        <option value="" disabled selected>Select Course</option>
+
+                                        <% courses.forEach(course => { %>
+                                            <option value="<%= course.course_id %>">
+                                                <%= course.course_name %>
+                                            </option>
+                                        <% }) %>
+                                    </select>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label>Academic Year</label>
+                                        <select name="academicyear" required>
+                                            <option value="" disabled selected>Select Year</option>
+                                            <option value="1st Year">1st Year</option>
+                                            <option value="2nd Year">2nd Year</option>
+                                            <option value="3rd Year">3rd Year</option>
+                                            <option value="4th Year">4th Year</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label>Section</label>
+                                        <select name="section" id="sectionSelect" required>
+                                            <option value="" disabled selected>Select Section</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+
+                                <!-- COR Upload -->
+                                <div class="file-upload-container">
+                                    <label>Upload Certificate of Registration</label>
+                                    <input type="file" id="corfile" name="corfile" accept="image/*" required>
+                                    <small class="file-note">Accepted: JPG, PNG, JPEG | Max size: 2MB</small>
+
+                                    <div class="image-preview d-none" id="corPreviewContainer">
+                                        <img id="corPreview" src="#" alt="COR Preview">
+                                    </div>
+
+                                    <div id="corError" class="text-danger fw-semibold mt-2 d-none"></div>
+                                </div>
+                            </div>
+
+                            <!-- SUBMIT -->
+                            <div class="text-center mt-4">
+                                <button class="btn-teal px-5 py-2" type="submit">Register</button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+
+

@@ -1,0 +1,266 @@
+<%- include("partials/header", { title: "Admin Dashboard" }) %>
+
+    <div class="admin-layout">
+
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <h3 class="sidebar-title">
+                <img src="/images/studford-logo.png" alt="Studford Logo" class="logo-img">
+                <div class="title-text">StudRec Admin</div>
+            </h3>        <ul class="sidebar-menu">
+            <li><a href="/admin/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+
+            <li class="has-submenu">
+                <a href="/admin/students-personal"><i class="bi bi-people"></i> Manage Students <i class="bi bi-chevron-down"></i></a>
+
+                <ul class="submenu">
+                    <li><a href="/admin/students-personal" class="active">Personal Information</a></li>
+                    <li><a href="/admin/students-academic">Academic Information</a></li>
+                    <li><a href="/admin/students-accounts">Accounts</a></li>
+                    <li><a href="/admin/add-student">Add New Student</a></li>
+                </ul>
+            </li>
+
+            <li><a href="/admin/courses"><i class="bi bi-journal-bookmark"></i> Manage Courses</a></li>
+        </ul>
+
+    </aside>
+
+        <main class="admin-content">
+            <!-- Top Navigation Header -->
+            <header class="admin-header">
+                <div class="header-middle">
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Search students...">
+                        <i class="bi bi-search search-icon"></i>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <div class="dropdown">
+                        <button class="btn-profile-dropdown" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="/admin/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-main-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-bold m-0">Student Information</h3>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-primary me-2" id="editBtn" disabled>
+                            <i class="bi bi-pencil"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger" id="deleteBtn" disabled>
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+
+            <div class="table-responsive shadow-sm table-scroll">
+                <table class="table table-hover align-middle" id="studentTable">
+                    <thead class="table-primary">
+                        <tr>
+                            <th style="width: 50px;"><input type="checkbox" id="selectAll"></th>
+                            <th class="col-id">ID</th>
+                            <th class="col-small">First Name</th>
+                            <th class="col-small">Middle Name</th>
+                            <th class="col-small">Last Name</th>
+                            <th class="col-small">Date of Birth</th>
+                            <th class="col-small">Gender</th>
+                            <th class="col-small">Phone Number</th>
+                            <th class="col-flex">Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% students.forEach(student=> { %>
+                            <tr>
+                                <td><input type="checkbox" class="row-checkbox" data-id="<%= student.student_id %>" data-firstname="<%= student.firstname %>" data-middlename="<%= student.middlename %>" data-lastname="<%= student.lastname %>" data-dob="<%= student.dateofbirth_raw %>" data-gender="<%= student.gender %>" data-phone="<%= student.phone %>" data-address="<%= student.address %>"></td>
+                                <td class="col-id">
+                                    <%= student.student_id %>
+                                </td>
+                                <td class="col-small">
+                                    <%= student.firstname %>
+                                </td>
+                                <td class="col-small">
+                                    <%= student.middlename %>
+                                </td>
+                                <td class="col-small">
+                                    <%= student.lastname %>
+                                </td>
+                                <td class="col-small">
+                                    <%= student.dateofbirth %>
+                                </td>
+                                <td class="col-small">
+                                    <%= student.gender %>
+                                </td>
+                                <td class="col-small">
+                                    <%= student.phone %>
+                                </td>
+                                <td class="col-flex">
+                                    <%= student.address %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.row-checkbox');
+        const editBtn = document.getElementById('editBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach(cb => cb.checked = this.checked);
+            updateButtons();
+        });
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', updateButtons);
+        });
+
+        function updateButtons() {
+            const checked = document.querySelectorAll('.row-checkbox:checked');
+            editBtn.disabled = checked.length !== 1;
+            deleteBtn.disabled = checked.length === 0;
+        }
+
+        editBtn.addEventListener('click', function() {
+            const checked = document.querySelector('.row-checkbox:checked');
+            if (checked) {
+                populateEditModal(
+                    checked.dataset.id,
+                    checked.dataset.firstname,
+                    checked.dataset.middlename,
+                    checked.dataset.lastname,
+                    checked.dataset.dob,
+                    checked.dataset.gender,
+                    checked.dataset.phone,
+                    checked.dataset.address
+                );
+                new bootstrap.Modal(document.getElementById('editModal')).show();
+            }
+        });
+
+        deleteBtn.addEventListener('click', function() {
+            const checked = document.querySelectorAll('.row-checkbox:checked');
+            if (checked.length > 0 && confirm(`Are you sure you want to delete ${checked.length} student(s)?`)) {
+                checked.forEach(cb => {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/admin/students/${cb.dataset.id}/delete`;
+                    document.body.appendChild(form);
+                    form.submit();
+                });
+            }
+        });
+    </script>
+
+    <!-- Edit Student Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary text-white border-0">
+                    <h5 class="modal-title fw-bold" id="editModalLabel">
+                        <i class="bi bi-pencil-square"></i> Edit Personal Information
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editForm" method="POST">
+                    <div class="modal-body p-4">
+                        <input type="hidden" id="studentId" name="student_id">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="firstname" class="form-label fw-semibold text-secondary">First Name</label>
+                                    <input type="text" class="form-control form-control-sm" id="firstname" name="firstname" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="middlename" class="form-label fw-semibold text-secondary">Middle Name</label>
+                                    <input type="text" class="form-control form-control-sm" id="middlename" name="middlename">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="lastname" class="form-label fw-semibold text-secondary">Last Name</label>
+                            <input type="text" class="form-control form-control-sm" id="lastname" name="lastname" required>
+                        </div>
+                        <hr class="my-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="dateofbirth" class="form-label fw-semibold text-secondary">Date of Birth</label>
+                                    <input type="date" class="form-control form-control-sm" id="dateofbirth" name="dateofbirth" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="gender" class="form-label fw-semibold text-secondary">Gender</label>
+                                    <select class="form-select form-select-sm" id="gender" name="gender" required>
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label fw-semibold text-secondary">Phone Number</label>
+                                    <input type="text" class="form-control form-control-sm" id="phone" name="phone" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="address" class="form-label fw-semibold text-secondary">Address</label>
+                                    <input type="text" class="form-control form-control-sm" id="address" name="address" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light border-top">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-check-circle"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function populateEditModal(studentId, firstname, middlename, lastname, dateofbirth, gender, phone, address) {
+            document.getElementById('studentId').value = studentId;
+            document.getElementById('firstname').value = firstname;
+            document.getElementById('middlename').value = middlename;
+            document.getElementById('lastname').value = lastname;
+            document.getElementById('dateofbirth').value = dateofbirth;
+            document.getElementById('gender').value = gender;
+            document.getElementById('phone').value = phone;
+            document.getElementById('address').value = address;
+            
+            // Set form action
+            document.getElementById('editForm').action = `/admin/students/${studentId}/edit`;
+        }
+    </script>
+            </main>
+        </main>
+
+    </div>
+
+    <%- include("partials/footer") %>
