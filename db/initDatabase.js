@@ -85,8 +85,17 @@ export async function initializeDatabase() {
             ('Bachelor of Arts in Communication', 3)
         `);
 
+        // Insert default admin account
+        await db.query(`
+            INSERT INTO admin (email, password) VALUES 
+            ('admin@studrec.com', '$2b$10$jACn0EiBeA5mr7j/BBcBKu5p9SKrhRL0kgb4Brie0nrDPtZnVqOey')
+        `);
+
         console.log("✓ Database tables created successfully!");
         console.log("✓ Sample courses inserted");
+        console.log("✓ Default admin account created");
+        console.log("  Email: admin@studrec.com");
+        console.log("  Password: studRECadmin01");
 
     } catch (error) {
         console.error("Database initialization error:", error.message);
