@@ -21,7 +21,7 @@ app.use(
         name: "connect.sid",
         cookie: {
             httpOnly: true,
-            secure: false, // Set to true if using HTTPS
+            secure: process.env.NODE_ENV === "production", // Enable secure cookies in production
             maxAge: 1000 * 60 * 60 * 24, // 24 hours
             sameSite: "lax"
         }
@@ -37,6 +37,7 @@ app.get("/", (req, res) => {
 app.use("/student", studentRoutes);
 app.use("/admin", adminRoutes);
 
-app.listen(3000, () => {
-    console.log("Server running on http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
