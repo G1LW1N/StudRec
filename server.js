@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import path from "path";
 import studentRoutes from "./routes/studentRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import { initializeDatabase } from "./db/initDatabase.js";
 
 dotenv.config();
 const app = express();
@@ -38,6 +39,15 @@ app.use("/student", studentRoutes);
 app.use("/admin", adminRoutes);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+
+// Initialize database and start server
+initializeDatabase()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    })
+    .catch((error) => {
+        console.error("Failed to initialize database:", error);
+        process.exit(1);
+    });
