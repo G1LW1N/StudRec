@@ -4,13 +4,11 @@ dotenv.config();
 
 const { Pool } = pg;
 
-// Support both Railway (DATABASE_URL) and Render (individual vars)
 export const db = new Pool(
     process.env.DATABASE_URL
         ? {
               connectionString: process.env.DATABASE_URL,
               ssl: {
-                  require: true,
                   rejectUnauthorized: false
               }
           }
